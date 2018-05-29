@@ -7,20 +7,19 @@ public class TestRuntimeManager : MonoBehaviour
 {
     public TestState testState;
 
-    public SaveLoader sl;
+    public SaveLoad sl;
     private TestDataManager testDataManager;
 
     public Text textInfo;
 
-    public List<Transform> targetObjects;
-    
+    public List<Transform> targetObjects;    
 
     // Use this for initialization
     void Start()
     {
         testState = TestState.none;
         testDataManager = GetComponent<TestDataManager>();
-        sl = GetComponent<SaveLoader>();
+        sl = GetComponent<SaveLoad>();
     }
 
     // Update is called once per frame
@@ -36,16 +35,121 @@ public class TestRuntimeManager : MonoBehaviour
 
     public void nextTest()
     {
-        testState++;  
+        SwitchStateEnd();
+        testState++;
+        testDataManager.testState = testState;
+        testDataManager.targetCurrent = targetObjects[(int)testState];
+        SwitchStateStart();
     }
+
+    /*
     public void prevTest()
     {
+        SwitchStateEnd();
         testState--;
+        testDataManager.testState = testState;
+        testDataManager.targetCurrent = targetObjects[(int)testState];
+        SwitchStateStart();
+    }
+    */
+
+    public void SwitchStateStart()
+    {
+        switch(testState)
+        {
+            case TestState.table:
+                TestResultDistanceMeasure table = new TestResultDistanceMeasure();
+                table.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                sl.proband.testDistance = table;
+                break;
+            case TestState.spotlightB:
+                TestResultSpotlight spotlight = new TestResultSpotlight();
+                spotlight.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                sl.proband.testSpotlightsBlue = spotlight;
+                break;
+            case TestState.spotlightG:
+                spotlight = new TestResultSpotlight();
+                spotlight.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                sl.proband.testSpotlightsGreen = spotlight;
+                break;
+            case TestState.spotlightR:
+                spotlight = new TestResultSpotlight();
+                spotlight.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                sl.proband.testSpotlightsRed = spotlight;
+                break;
+            case TestState.clockBig:
+                TestResultClocks clock = new TestResultClocks();
+                clock.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                sl.proband.testClocksBig = clock;
+                break;
+            case TestState.clockNormal:
+                clock = new TestResultClocks();
+                clock.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                sl.proband.testClocksNormal = clock;
+                break;
+            case TestState.clockSmall:
+                clock = new TestResultClocks();
+                clock.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                sl.proband.testClocksSmall = clock;
+                break;
+            case TestState.cube:
+                TestResultCube cube = new TestResultCube();
+                cube.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                sl.proband.testCube = cube;
+                break;
+        }
+    }
+
+    public void SwitchStateEnd()
+    {
+        switch(testState)
+        {
+            case TestState.table:
+                TestResultDistanceMeasure table = sl.proband.testDistance;
+                table.fillEnd(testDataManager.timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                sl.proband.testDistance = table;
+                break;
+            case TestState.spotlightB:
+                TestResultSpotlight spotlight = new TestResultSpotlight();
+                spotlight.fillEnd(testDataManager.timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                sl.proband.testSpotlightsBlue = spotlight;
+                break;
+            case TestState.spotlightG:
+                spotlight = new TestResultSpotlight();
+                spotlight.fillEnd(testDataManager.timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                sl.proband.testSpotlightsGreen = spotlight;
+                break;
+            case TestState.spotlightR:
+                spotlight = new TestResultSpotlight();
+                spotlight.fillEnd(testDataManager.timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                sl.proband.testSpotlightsRed = spotlight;
+                break;
+            case TestState.clockBig:
+                TestResultClocks clock = new TestResultClocks();
+                clock.fillEnd(testDataManager.timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                sl.proband.testClocksBig = clock;
+                break;
+            case TestState.clockNormal:
+                clock = new TestResultClocks();
+                clock.fillEnd(testDataManager.timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                sl.proband.testClocksNormal = clock;
+                break;
+            case TestState.clockSmall:
+                clock = new TestResultClocks();
+                clock.fillEnd(testDataManager.timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                sl.proband.testClocksSmall = clock;
+                break;
+            case TestState.cube:
+                TestResultCube cube = new TestResultCube();
+                cube.fillEnd(testDataManager.timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                sl.proband.testCube = cube;
+                break;
+        }
     }
 
     void processData()
     {
-        sl.Proband.AddStep(testDataManager);
+        sl.proband.AddStep(testDataManager);
     }
 
     void saveDataFiles()
@@ -92,4 +196,3 @@ public enum TestState
 
     testEnded,
 }
-

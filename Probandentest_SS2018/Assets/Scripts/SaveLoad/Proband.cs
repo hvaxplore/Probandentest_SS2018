@@ -17,6 +17,7 @@ public class Proband
     public float IPD;
     public float EyeHeight;
 
+	public TestResultDistanceMeasure testGist;
 	public TestResultDistanceMeasure testDistance;
 	public TestResultSpotlight testSpotlightsRed;
 	public TestResultSpotlight testSpotlightsGreen;
@@ -94,18 +95,31 @@ public class TestStep
 
 public class TestResults
 {
-	public TestState taskIndex;
-	public int taskOrder;
-	public bool taskFulfilled;
-
+	public TestState testState;
 	public float timeStart;
+
 	public float timeEnd;
 	public float testDuration;
 
-	public Vector3 positionOnTaskFinish;
-	public float distanceToTarget;
-}
+	public bool taskFulfilled;
 
+	public Transform positionOnTaskFinish;
+	public float distanceToTarget;
+
+	public virtual void fillStart(TestState _state, float _time)
+	{
+		testState = _state;
+		timeStart = _time;
+	}
+
+	public virtual void fillEnd(float _time, Transform _head, Transform _target)
+	{
+		timeEnd = _time;
+		testDuration = timeEnd - timeStart;
+		positionOnTaskFinish = _head;
+		distanceToTarget = Vector3.Distance(_head.position, _target.position);
+	}
+}
 public class TestResultDistanceMeasure : TestResults
 {
 	public float distanceGuess;
@@ -113,6 +127,18 @@ public class TestResultDistanceMeasure : TestResults
 public class TestResultSpotlight : TestResults
 {
 	public Vector3 spotLightPosition;
+
+	public override void fillEnd(float _time, Transform _head, Transform _target)
+	{
+		timeEnd = _time;
+		testDuration = timeEnd - timeStart;
+		positionOnTaskFinish = _head;
+		Vector3 head = _head.position;
+		head.y = 0;
+		Vector3 target = _target.position;
+		target.y = 0;
+		distanceToTarget = Vector3.Distance(head, target);
+	}
 }
 public class TestResultClocks : TestResults
 {

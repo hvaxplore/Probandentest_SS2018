@@ -21,11 +21,12 @@ public class TestDataManager : MonoBehaviour
 	public Transform targetCurrent; // 
 	public float distanceToTarget;
 
+    public float timeCurrent;
+
     public float rayScale = 0;
 
     public bool debugMode;
 
-    public float timeCurrent;
 
     // Use this for initialization
     void Start()
