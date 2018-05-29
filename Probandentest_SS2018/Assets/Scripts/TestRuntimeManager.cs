@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(TestDataManager), typeof(SaveLoad))]
 public class TestRuntimeManager : MonoBehaviour
 {
     public TestState testState;
@@ -12,7 +13,19 @@ public class TestRuntimeManager : MonoBehaviour
 
     public Text textInfo;
 
-    public List<Transform> targetObjects;    
+    public List<Transform> targetObjects; // TODO: Make serializable class for this
+    public static TestRuntimeManager instance; 
+
+    void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+        } else {
+            Destroy(gameObject);
+        }
+        DontDestroyOnLoad(gameObject);
+    }
 
     // Use this for initialization
     void Start()
@@ -59,42 +72,42 @@ public class TestRuntimeManager : MonoBehaviour
         {
             case TestState.table:
                 TestResultDistanceMeasure table = new TestResultDistanceMeasure();
-                table.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                table.fillStart(testDataManager.testState, testDataManager.timeCurrent, testDataManager.camCyclop);
                 sl.proband.testDistance = table;
                 break;
             case TestState.spotlightB:
                 TestResultSpotlight spotlight = new TestResultSpotlight();
-                spotlight.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                spotlight.fillStart(testDataManager.testState, testDataManager.timeCurrent, testDataManager.camCyclop);
                 sl.proband.testSpotlightsBlue = spotlight;
                 break;
             case TestState.spotlightG:
                 spotlight = new TestResultSpotlight();
-                spotlight.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                spotlight.fillStart(testDataManager.testState, testDataManager.timeCurrent, testDataManager.camCyclop);
                 sl.proband.testSpotlightsGreen = spotlight;
                 break;
             case TestState.spotlightR:
                 spotlight = new TestResultSpotlight();
-                spotlight.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                spotlight.fillStart(testDataManager.testState, testDataManager.timeCurrent, testDataManager.camCyclop);
                 sl.proband.testSpotlightsRed = spotlight;
                 break;
             case TestState.clockBig:
                 TestResultClocks clock = new TestResultClocks();
-                clock.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                clock.fillStart(testDataManager.testState, testDataManager.timeCurrent, testDataManager.camCyclop);
                 sl.proband.testClocksBig = clock;
                 break;
             case TestState.clockNormal:
                 clock = new TestResultClocks();
-                clock.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                clock.fillStart(testDataManager.testState, testDataManager.timeCurrent, testDataManager.camCyclop);
                 sl.proband.testClocksNormal = clock;
                 break;
             case TestState.clockSmall:
                 clock = new TestResultClocks();
-                clock.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                clock.fillStart(testDataManager.testState, testDataManager.timeCurrent, testDataManager.camCyclop);
                 sl.proband.testClocksSmall = clock;
                 break;
             case TestState.cube:
                 TestResultCube cube = new TestResultCube();
-                cube.fillStart(testDataManager.testState, testDataManager.timeCurrent);
+                cube.fillStart(testDataManager.testState, testDataManager.timeCurrent, testDataManager.camCyclop);
                 sl.proband.testCube = cube;
                 break;
         }

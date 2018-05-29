@@ -28,16 +28,17 @@ public class SaveLoad : MonoBehaviour {
         Debug.Log("SAVED");
 	}
 
+    // TODO: Autocreate folder in build
     public string GetPath(string _filename, string _filetype)
     {
 		#if UNITY_EDITOR
-				return Application.dataPath + "/probs/" + _filename + "." + _filetype;
+				return Application.dataPath + "/" + _filename + "." + _filetype;
 		#elif UNITY_ANDROID
-				return Application.persistentDataPath + "/probs/" + _filename + "." + _filetype;
+				return Application.persistentDataPath + "/" + _filename + "." + _filetype;
 		#elif UNITY_IPHONE
-				return Application.persistentDataPath + "/probs/" + _filename + "." + _filetype;
+				return Application.persistentDataPath + "/" + _filename + "." + _filetype;
 		#else
-				return Application.dataPath + "/probs/" + _filename + "." + _filetype;
+				return Application.dataPath + "/" + _filename + "." + _filetype;
 		#endif
     }
 }

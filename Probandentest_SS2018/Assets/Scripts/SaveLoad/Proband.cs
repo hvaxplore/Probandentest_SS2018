@@ -7,17 +7,20 @@ public class Proband
 {
     public string Name;
     public int Id;
-    public string Gender;
 
-    public string vrAffinity; // How many times VR was used by the proband
+	/*
+		public string Gender;
+		public string Contact;
 
-    public string opticalHelp; // The Sehhilfe
-    public string opticalErrors; // The Sehfehlers
+		public string vrAffinity; // How many times VR was used by the proband
+
+		public string opticalHelp; // The Sehhilfe
+		public string opticalErrors; // The Sehfehlers
+	*/
 
     public float IPD;
     public float EyeHeight;
 
-	public TestResultDistanceMeasure testGist;
 	public TestResultDistanceMeasure testDistance;
 	public TestResultSpotlight testSpotlightsRed;
 	public TestResultSpotlight testSpotlightsGreen;
@@ -29,14 +32,18 @@ public class Proband
 
     public List<TestStep> steps;
 
-    public Proband(string _name, int _id, string _gender, string _vr, string _opticalHelp, string _opticalError, float _ipd, float _eyeHeight)
+    public Proband(string _name, int _id, string _gender, string _contact, string _vr, string _opticalHelp, string _opticalError, float _ipd, float _eyeHeight)
     {
         Name = _name;
         Id = _id;
+
+		/*
         Gender = _gender;
+		Contact = _contact;
         vrAffinity = _vr; // How many times VR was used by the proband
         opticalHelp = _opticalHelp; // The Sehhilfe
         opticalErrors = _opticalError; // The Sehfehlers
+		*/
 
         IPD = _ipd;
 		EyeHeight = _eyeHeight;
@@ -48,10 +55,14 @@ public class Proband
     {
         Name = _prob.Name;
         Id = _prob.Id;
+
+		/*
         Gender = _prob.Gender;
         vrAffinity = _prob.vrAffinity; // How many times VR was used by the proband
         opticalHelp = _prob.opticalHelp; // The Sehhilfe
         opticalErrors = _prob.opticalErrors; // The Sehfehlers
+		*/
+
         IPD = _prob.IPD;
 
         steps = new List<TestStep>();
@@ -77,13 +88,13 @@ public class TestStep
     public float timeCurrent; // Time
 
     // Saved seperately, if it is necessary to look into all data
-	public ObjectPosRot headData;
+	public ObjectPosRot headData; // TODO: Transform instead ObjectPosRot
     public ObjectRot eyeLeft;
     public ObjectRot eyeRight;
 
     public TestStep(TestState _taskIndex, float _time, Transform _head, Transform _eyeLeft, Transform _eyeRight)
     {
-        taskIndexCurrent = _taskIndex;
+        taskIndexCurrent = _taskIndex; // TODO: Time.time instead 
 
         timeCurrent = _time;
 
@@ -95,7 +106,7 @@ public class TestStep
 
 public class TestResults
 {
-	public TestState testState;
+	public string testState;
 	public float timeStart;
 
 	public float timeEnd;
@@ -103,13 +114,15 @@ public class TestResults
 
 	public bool taskFulfilled;
 
+	public Transform positionOnTaskStart;
 	public Transform positionOnTaskFinish;
 	public float distanceToTarget;
 
-	public virtual void fillStart(TestState _state, float _time)
+	public virtual void fillStart(TestState _state, float _time, Transform _head)
 	{
-		testState = _state;
+		testState = _state.ToString(); // TODO: test this
 		timeStart = _time;
+		positionOnTaskStart = _head;
 	}
 
 	public virtual void fillEnd(float _time, Transform _head, Transform _target)
@@ -120,10 +133,12 @@ public class TestResults
 		distanceToTarget = Vector3.Distance(_head.position, _target.position);
 	}
 }
+
 public class TestResultDistanceMeasure : TestResults
 {
 	public float distanceGuess;
 }
+
 public class TestResultSpotlight : TestResults
 {
 	public Vector3 spotLightPosition;
@@ -133,6 +148,7 @@ public class TestResultSpotlight : TestResults
 		timeEnd = _time;
 		testDuration = timeEnd - timeStart;
 		positionOnTaskFinish = _head;
+
 		Vector3 head = _head.position;
 		head.y = 0;
 		Vector3 target = _target.position;
@@ -140,20 +156,18 @@ public class TestResultSpotlight : TestResults
 		distanceToTarget = Vector3.Distance(head, target);
 	}
 }
+
 public class TestResultClocks : TestResults
 {
-	public bool correct;
+	public string timeReal;
+	public string timeGuess;
 }
+
 public class TestResultCube : TestResults
 {
 	public int cubeGiven;
 	public int cubeChosen;
 }
-
-
-
-
-
 
 public class ObjectPosRot
 {
@@ -192,6 +206,7 @@ public class ObjectRot
 		objRot = _eyeRot;
     }
 }
+/*
 public class SerializableRotation
 {
 	public float xRot;
@@ -220,3 +235,4 @@ public class SerializablePosition
 		zPos = pos.z;
 	}
 }
+*/
