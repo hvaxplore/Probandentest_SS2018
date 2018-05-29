@@ -11,47 +11,31 @@ using System.Runtime.Serialization.Formatters.Binary;
 /// </summary>
 public class TestDataManager : MonoBehaviour
 {
-    public Transform marker;
+    public TestRuntimeManager runtimeManager;
+    public TestState testState;
+
     public Transform camLeft;
     public Transform camRight;
     public Transform camCyclop; // is the head transform
 
-	/*
-    public Transform head;
-    public Transform eyeLeft;
-    public Transform eyeRight;
-	*/
-    public Transform handLeft;
-    public Transform handRight;
-
-	public Transform targetCurrent;
+	public Transform targetCurrent; // 
 	public float distanceToTarget;
 
     public float rayScale = 0;
 
-    public float convergenceAngle;
-    public float convergenceAngleL;
-    public float convergenceAngleR;
-    public float convergenceAngle_plane;
-    public float convergenceDistance;
-
-    //public AbsoluteParallax targetObj;
-
     public bool debugMode;
 
-    private float times;
+    public float timeCurrent;
 
     // Use this for initialization
     void Start()
     {
         PupilData.calculateMovingAverage = true;
-
     }
 
     // Update is called once per frame
     void Update()
     {
-
         if(debugMode)
         {
             Debug.Log("gaze: " + PupilTools.ConfidenceForDictionary(PupilTools.gazeDictionary));
@@ -59,22 +43,20 @@ public class TestDataManager : MonoBehaviour
             Debug.Log("1 " + PupilTools.ConfidenceForDictionary(PupilTools.pupil1Dictionary));
         }
 
+        testState = runtimeManager.testState;
+
         if (PupilTools.IsConnected && PupilTools.DataProcessState == Pupil.EStatus.ProcessingGaze)
         {
             Vector3 gazeLeft = camCyclop.rotation * PupilData._3D.LeftGazeNormal;
             Vector3 gazeRight = camCyclop.rotation * PupilData._3D.RightGazeNormal;
+
+            timeCurrent+= Time.deltaTime;
 
             if(debugMode)
             {
                 Debug.DrawRay(Eyes.instance.leftEyeCam.transform.position, gazeLeft * rayScale, Color.red);
                 Debug.DrawRay(Eyes.instance.rightEyeCam.transform.position, gazeRight * rayScale, Color.blue);
             }
-
-            convergenceAngle = Vector3.Angle(gazeLeft, gazeRight);
-            convergenceAngleL = Vector3.Angle(gazeLeft, camCyclop.transform.forward);
-            convergenceAngleR = Vector3.Angle(gazeRight, camCyclop.transform.forward);
-            convergenceAngle_plane = Vector3.Angle(new Vector3(gazeLeft.x, 0, gazeLeft.z), new Vector3(gazeRight.x, 0, gazeRight.z));
-            convergenceDistance = (Eyes.instance.interPupillarDistance / 2.0f) / Mathf.Tan(convergenceAngle / 2.0f);
         }
     }
 

@@ -5,161 +5,47 @@ using UnityEngine.UI;
 
 public class TestRuntimeManager : MonoBehaviour
 {
-    public SaveLoader sl;
-
-    private TestDataManager testDataManager;
-
     public TestState testState;
 
-	/*
-		public List<float> originalDistanceData;
-		public List<float> remainingDistanceData;
-		public List<int> indexes;
-	*/
+    public SaveLoader sl;
+    private TestDataManager testDataManager;
 
-	public int taskIndex;
-	public bool taskFinished; // If the current task is finished
-    public int order; // only applicable if the current task has a order, else 0
+    public Text textInfo;
 
-
-    public float initTime;
-    public float timePerTest;
-    public float elapsedTime;
-    private float elapsedTicks;
-    public float confidence;
-    public float confidenceThreshold = 0.7f;
-
-    public GameObject canvas;
+    public List<Transform> targetObjects;
+    
 
     // Use this for initialization
     void Start()
     {
-        testState = TestState.stopped;
+        testState = TestState.none;
         testDataManager = GetComponent<TestDataManager>();
-        resetTest();
-        for(int i = 0; i < remainingDistanceData.Count; i++)
-        {
-            indexes.Add(i);
-        }
+        sl = GetComponent<SaveLoader>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N) && testState == TestState.stopped)
-        {
-            CancelInvoke("startTest");
-            randomTest();
-            Invoke("startTest", initTime);
-        }
-        else if (Input.GetKeyDown(KeyCode.S) && testState != TestState.testEnded)
-        {
-            randomTest();
-            startTest();
-        }
-        else if (Input.GetKeyDown(KeyCode.E) && testState != TestState.testEnded)
-        {
-            stopTest();
-        }
-        else if (Input.GetKeyDown(KeyCode.R))
-        {
-            resetTest();
-        }
+        updateTestInfo(); // Updates the UI, not visible for VR-User
 
-        if (testState == TestState.waiting)
+        if(testState != TestState.none) 
         {
-            // randomTest();
-            nextTest();
-            startTest();
-        }
-
-        if (testState == TestState.running)
-        {
-            if (elapsedTime < timePerTest)
-            {
-                elapsedTime += Time.deltaTime;
-                elapsedTicks++;
-                processData();
-            }
-            else
-            {
-                elapsedTime = 0;
-                elapsedTicks = 0;
-                testState = TestState.waiting;
-                finalizeSingleData();
-            }
+            processData(); // If the tests start, do stuff
         }
     }
 
-    public void startautonomTest()
+    public void nextTest()
     {
-        randomTest();
-        startTest();
+        testState++;  
     }
-
-    void resetTest()
+    public void prevTest()
     {
-        testState = TestState.stopped;
-        remainingDistanceData = new List<float>(originalDistanceData);
-
-        taskIndex = 0;
-		taskFinished = false;
-		order = 0;
-
-        elapsedTime = 0;
-        elapsedTicks = 0;
-    }
-
-    void nextTest()
-    {
-        if (indexes.Count > 0)
-        {
-            activeTestID = indexes[indexes.Count-1];
-            activeDistance = originalDistanceData[activeTestID];
-            elapsedTime = 0;
-            elapsedTicks = 0;
-            testDataManager.targetObj.dist_Z = activeDistance;
-        }
-    }
-
-    void randomTest()
-    {
-        if (indexes.Count > 0)
-        {
-            activeTestID = indexes[Random.Range(0, indexes.Count)];
-            activeDistance = originalDistanceData[activeTestID];
-            elapsedTime = 0;
-            elapsedTicks = 0;
-            testDataManager.targetObj.dist_Z = activeDistance;
-        }
-    }
-
-    void finalizeSingleData()
-    {
-        //remainingDistanceData.RemoveAt(activeTestID);
-        indexes.Remove(activeTestID);
-        orderID++;
-        if (indexes.Count <= 0)
-        {
-            FinalizeWholeData();
-        }
-    }
-
-    void FinalizeWholeData()
-    {
-        Debug.Log("Test Ended. pls restart");
-        testState = TestState.testEnded;
-        saveDataFiles();
+        testState--;
     }
 
     void processData()
     {
-        //Debug.Log(sl);
-        confidence = PupilTools.ConfidenceForDictionary(PupilTools.gazeDictionary);
-        if (confidence > confidenceThreshold)
-        {
-            sl.Proband.AddStep(activeTestID, orderID, activeDistance, testDataManager.targetObj.absParallax, elapsedTime, elapsedTicks, confidence, testDataManager.convergenceAngle, testDataManager.convergenceAngleL, true, testDataManager.convergenceAngleR, true);
-        }
+        sl.Proband.AddStep(testDataManager);
     }
 
     void saveDataFiles()
@@ -167,27 +53,43 @@ public class TestRuntimeManager : MonoBehaviour
         sl.SaveProband();
     }
 
-    void stopTest()
+    void updateTestInfo()
     {
-        CancelInvoke("startTest");
-        elapsedTime = 0;
-        elapsedTicks = 0;
-        testState = TestState.stopped;
-    }
-
-    void startTest()
-    {
-        elapsedTime = 0;
-        elapsedTicks = 0;
-        testState = TestState.running;
+        textInfo.text = testState.ToString() + ": time: " + testDataManager.timeCurrent +  " seconds";
     }
 }
 
 public enum TestState
 {
-    running,
-    waiting,
-    finalize,
-    stopped,
-    testEnded
+	none,
+
+	gist,
+	gistIdle,
+
+	table,
+	tableIdle,
+
+	spotlightR,
+	spotlightRIdle,
+
+	spotlightG,
+	spotlightGIdle,
+
+	spotlightB,
+	spotlightBIdle,
+
+	clockSmall,
+	clockSmallIdle,
+
+	clockNormal,
+	clockNormalIdle,
+
+	clockBig,
+	clockBigIdle,
+
+	cube,
+	cubeIdle,
+
+    testEnded,
 }
+
