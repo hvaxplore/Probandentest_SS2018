@@ -88,9 +88,9 @@ public class TestStep
     public float timeCurrent; // Time
 
     // Saved seperately, if it is necessary to look into all data
-	public ObjectPosRot headData; // TODO: Transform instead ObjectPosRot
-    public ObjectRot eyeLeft;
-    public ObjectRot eyeRight;
+	public Transform headData; // TODO: Transform instead ObjectPosRot
+    public Quaternion eyeLeft;
+    public Quaternion eyeRight;
 
     public TestStep(TestState _taskIndex, float _time, Transform _head, Transform _eyeLeft, Transform _eyeRight)
     {
@@ -98,12 +98,12 @@ public class TestStep
 
         timeCurrent = _time;
 
-        headData = new ObjectPosRot(_head);
-        eyeLeft = new ObjectRot(_eyeLeft);
-        eyeRight = new ObjectRot(_eyeRight);
+        //headData = new ObjectPosRot(_head);
+        //eyeLeft = new ObjectRot(_eyeLeft);
+        //eyeRight = new ObjectRot(_eyeRight);
    }
 }
-
+[System.Serializable]
 public class TestResults
 {
 	public string testState;
@@ -134,11 +134,13 @@ public class TestResults
 	}
 }
 
+[System.Serializable]
 public class TestResultDistanceMeasure : TestResults
 {
 	public float distanceGuess;
 }
 
+[System.Serializable]
 public class TestResultSpotlight : TestResults
 {
 	public Vector3 spotLightPosition;
@@ -156,19 +158,19 @@ public class TestResultSpotlight : TestResults
 		distanceToTarget = Vector3.Distance(head, target);
 	}
 }
-
+[System.Serializable]
 public class TestResultClocks : TestResults
 {
 	public string timeReal;
 	public string timeGuess;
 }
-
+[System.Serializable]
 public class TestResultCube : TestResults
 {
 	public int cubeGiven;
 	public int cubeChosen;
 }
-
+[System.Serializable]
 public class ObjectPosRot
 {
 	public Vector3 objPos;
@@ -189,6 +191,7 @@ public class ObjectPosRot
 		objRot = _handRot;
 	}
 }
+[System.Serializable]
 public class ObjectRot
 {
 	public Quaternion objRot;
