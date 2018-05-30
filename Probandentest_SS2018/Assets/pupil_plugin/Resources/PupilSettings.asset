@@ -19,10 +19,10 @@ MonoBehaviour:
     IP: 127.0.0.1
     IPHeader: '>tcp://127.0.0.1:'
     PORT: 50020
-    subport: 65168
+    subport: 51898
     isLocal: 1
-    PupilVersion: 1.5.12
-    PupilVersionNumbers: 01000000050000000c000000
+    PupilVersion: 1.7.42
+    PupilVersionNumbers: 01000000070000002a000000
   calibration:
     CalibrationType2D:
       name: 2d

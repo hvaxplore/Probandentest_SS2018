@@ -1,113 +1,112 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using Pupil;
+﻿//using System.Collections;
+//using System.Collections.Generic;
+//using UnityEngine;
+//using UnityEngine.UI;
 
-public class PupilDemoManager : MonoBehaviour 
-{
-	public Calibration.Mode calibrationMode = Calibration.Mode._2D;
-	public List<GameObject> gameObjectsToEnable;
+//public class PupilDemoManager : MonoBehaviour 
+//{
+//	public Calibration.Mode calibrationMode = Calibration.Mode._2D;
+//	public List<GameObject> gameObjectsToEnable;
 
-	GameObject cameraObject;
-	Text calibrationText;
+//	GameObject cameraObject;
+//	Text calibrationText;
 
-	void Start()
-	{	
-		PupilTools.OnConnected += OnConnected;
-		PupilTools.OnDisconnecting += OnDisconnected;
-		PupilTools.OnCalibrationStarted += OnCalibtaionStarted;
-		PupilTools.OnCalibrationEnded += OnCalibrationEnded;
-		PupilTools.OnCalibrationFailed += OnCalibrationFailed;
+//	void Start()
+//	{	
+//		PupilTools.OnConnected += OnConnected;
+//		PupilTools.OnDisconnecting += OnDisconnected;
+//		PupilTools.OnCalibrationStarted += OnCalibtaionStarted;
+//		PupilTools.OnCalibrationEnded += OnCalibrationEnded;
+//		PupilTools.OnCalibrationFailed += OnCalibrationFailed;
 	
-		PupilSettings.Instance.currentCamera = GetComponentInChildren<Camera> ();
-		cameraObject = PupilSettings.Instance.currentCamera.gameObject;
+//		PupilSettings.Instance.currentCamera = GetComponentInChildren<Camera> ();
+//		cameraObject = PupilSettings.Instance.currentCamera.gameObject;
 
-		ResetCalibrationText ();
-	}
+//		ResetCalibrationText ();
+//	}
 
-	void ResetCalibrationText()
-	{
-		if (calibrationText == null)
-			calibrationText = cameraObject.GetComponentInChildren<Text> ();
+//	void ResetCalibrationText()
+//	{
+//		if (calibrationText == null)
+//			calibrationText = cameraObject.GetComponentInChildren<Text> ();
 
-		if (PupilTools.Connection.isAutorun)
-			calibrationText.text = "Connecting to pupil.";
-		else
-			calibrationText.text = "Select PupilGazeTracker and\npress 'Start' in the Inspector GUI\nto connect to Pupil.";
-	}
+//		if (PupilTools.Connection.isAutorun)
+//			calibrationText.text = "Connecting to pupil.";
+//		else
+//			calibrationText.text = "Select PupilGazeTracker and\npress 'Start' in the Inspector GUI\nto connect to Pupil.";
+//	}
 
-	void OnDisconnected()
-	{
-		ResetCalibrationText ();
-	}
+//	void OnDisconnected()
+//	{
+//		ResetCalibrationText ();
+//	}
 
-	void OnConnected()
-	{
-		calibrationText.text = "Success";
+//	void OnConnected()
+//	{
+//		calibrationText.text = "Success";
 
-		PupilTools.CalibrationMode = calibrationMode;
+//		PupilTools.CalibrationMode = calibrationMode;
 
-		Invoke ("ShowCalibrate", 1f);
-	}
+//		Invoke ("ShowCalibrate", 1f);
+//	}
 
-	void ShowCalibrate()
-	{
-		calibrationText.text = "Press 'c' to start calibration.";
-	}
+//	void ShowCalibrate()
+//	{
+//		calibrationText.text = "Press 'c' to start calibration.";
+//	}
 
-	void OnCalibtaionStarted()
-	{
-		cameraObject.SetActive (true);
-		PupilSettings.Instance.currentCamera = cameraObject.GetComponent<Camera> ();
-		calibrationText.text = "";
+//	void OnCalibtaionStarted()
+//	{
+//		cameraObject.SetActive (true);
+//		PupilSettings.Instance.currentCamera = cameraObject.GetComponent<Camera> ();
+//		calibrationText.text = "";
 			
-		foreach (GameObject go in gameObjectsToEnable) 
-		{
-			go.SetActive (false);
-		}
-	}
+//		foreach (GameObject go in gameObjectsToEnable) 
+//		{
+//			go.SetActive (false);
+//		}
+//	}
 		
-	void OnCalibrationEnded()
-	{
-		calibrationText.text = "Calibration ended.";
+//	void OnCalibrationEnded()
+//	{
+//		calibrationText.text = "Calibration ended.";
 
-		Invoke ("StartDemo", 1f);
-	}
+//		Invoke ("StartDemo", 1f);
+//	}
 
-	void OnCalibrationFailed()
-	{
-		calibrationText.text = "Calibration failed\nPress 'c' to start it again.";
-	}
+//	void OnCalibrationFailed()
+//	{
+//		calibrationText.text = "Calibration failed\nPress 'c' to start it again.";
+//	}
 
-	void StartDemo()
-	{
-		foreach (GameObject go in gameObjectsToEnable) 
-		{
-			go.SetActive (true);
-		}
-		cameraObject.SetActive (false);
-	}
+//	void StartDemo()
+//	{
+//		foreach (GameObject go in gameObjectsToEnable) 
+//		{
+//			go.SetActive (true);
+//		}
+//		cameraObject.SetActive (false);
+//	}
 
-	void Update()
-	{
-        /*
-		if (Input.GetKeyUp (KeyCode.S)) 
-			StartDemo ();
-        */
-	}
+//	void Update()
+//	{
+//        /*
+//		if (Input.GetKeyUp (KeyCode.S)) 
+//			StartDemo ();
+//        */
+//	}
 
-    public void StartCalibrationProcess()
-    {
-        PupilTools.StartCalibration();
-    }
+//    public void StartCalibrationProcess()
+//    {
+//        PupilTools.StartCalibration();
+//    }
 
-	void OnApplicationQuit()
-	{
-		PupilTools.OnConnected -= OnConnected;
-		PupilTools.OnDisconnecting -= OnDisconnected;
-		PupilTools.OnCalibrationStarted -= OnCalibtaionStarted;
-		PupilTools.OnCalibrationEnded -= OnCalibrationEnded;
-		PupilTools.OnCalibrationFailed -= OnCalibrationFailed;
-	}
-}
+//	void OnApplicationQuit()
+//	{
+//		PupilTools.OnConnected -= OnConnected;
+//		PupilTools.OnDisconnecting -= OnDisconnected;
+//		PupilTools.OnCalibrationStarted -= OnCalibtaionStarted;
+//		PupilTools.OnCalibrationEnded -= OnCalibrationEnded;
+//		PupilTools.OnCalibrationFailed -= OnCalibrationFailed;
+//	}
+//}
