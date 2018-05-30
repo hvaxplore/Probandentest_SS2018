@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System.IO;
-using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using UnityEngine;
 
 /// <summary>
 /// Contains all var values of the test for easy access
@@ -37,16 +31,9 @@ public class TestDataManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(debugMode)
-        {
-            Debug.Log("gaze: " + PupilTools.ConfidenceForDictionary(PupilTools.gazeDictionary));
-            Debug.Log("0 " + PupilTools.ConfidenceForDictionary(PupilTools.pupil0Dictionary));
-            Debug.Log("1 " + PupilTools.ConfidenceForDictionary(PupilTools.pupil1Dictionary));
-        }
-
         testState = runtimeManager.testState;
 
-        if (PupilTools.IsConnected && PupilTools.DataProcessState == Pupil.EStatus.ProcessingGaze)
+        if (PupilTools.IsConnected)
         {
             Vector3 gazeLeft = camCyclop.rotation * PupilData._3D.LeftGazeNormal;
             Vector3 gazeRight = camCyclop.rotation * PupilData._3D.RightGazeNormal;
@@ -71,7 +58,7 @@ public class TestDataManager : MonoBehaviour
 
     void OnDisable()
     {
-        if (PupilTools.IsConnected && PupilTools.DataProcessState == Pupil.EStatus.ProcessingGaze)
+        if (PupilTools.IsConnected)
         {
             PupilTools.UnSubscribeFrom("gaze");
             print("We stopped gazing");
