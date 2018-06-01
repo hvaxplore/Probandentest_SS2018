@@ -6,7 +6,7 @@
 public class TestDataManager : MonoBehaviour
 {
     public TestRuntimeManager runtimeManager;
-    public TestState testState;
+    private TestState testState;
 
     public Transform camLeft;
     public Transform camRight;
@@ -15,30 +15,43 @@ public class TestDataManager : MonoBehaviour
 	public Transform targetCurrent; // 
 	public float distanceToTarget;
 
-    public float timeCurrent;
-
     public float rayScale = 0;
 
     public bool debugMode;
+
+    public TestState TestState
+    {
+        get
+        {
+            return testState;
+        }
+
+        set
+        {
+            testState = (TestState) Mathf.Max(0, Mathf.Min(TestState.GetNames(typeof(TestState)).Length - 1, (int)value));
+        }
+    }
 
 
     // Use this for initialization
     void Start()
     {
         PupilData.calculateMovingAverage = true;
+        runtimeManager = GetComponent<TestRuntimeManager>();
+
+        camLeft = Eyes.instance.leftEyeCam.transform;
+        camRight = Eyes.instance.rightEyeCam.transform;
+        camCyclop = Eyes.instance.cyclopCam.transform;
     }
 
     // Update is called once per frame
     void Update()
     {
-        testState = runtimeManager.testState;
 
         if (PupilTools.IsConnected)
         {
             Vector3 gazeLeft = camCyclop.rotation * PupilData._3D.LeftGazeNormal;
             Vector3 gazeRight = camCyclop.rotation * PupilData._3D.RightGazeNormal;
-
-            timeCurrent+= Time.deltaTime;
 
             if(debugMode)
             {

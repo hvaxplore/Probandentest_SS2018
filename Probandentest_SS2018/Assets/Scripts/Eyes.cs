@@ -12,7 +12,7 @@ public class Eyes : MonoBehaviour
     public float convergenceAngle;
 
     public bool fixPosition;
-    public bool lockRotation;
+    //public bool lockRotation;
     public bool getStereobasisFromVive;
     public bool debugMode;
 
@@ -59,7 +59,7 @@ public class Eyes : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        InputTracking.disablePositionalTracking = fixPosition;
+        //InputTracking.disablePositionalTracking = fixPosition;
 
         if (getStereobasisFromVive)
         {
@@ -93,27 +93,30 @@ public class Eyes : MonoBehaviour
             rightEyeCam.transform.localPosition = new Vector3(interPupillarDistance / 2.0f, 0, 0);
             */
 
-            leftEyeCam.transform.position = leftEyeTarget.transform.position - cyclopCam.transform.right * interPupillarDistance / 2.0f;
-            rightEyeCam.transform.position = rightEyeTarget.transform.position + cyclopCam.transform.right * interPupillarDistance / 2.0f;
+            //leftEyeWrapper.transform.localPosition = leftEyeTarget.transform.position - cyclopCam.transform.right * interPupillarDistance / 2.0f;
+            //rightEyeWrapper.transform.localPosition = rightEyeTarget.transform.position + cyclopCam.transform.right * interPupillarDistance / 2.0f;
 
+            //leftEyeCam.transform.rotation = leftEyeTarget.transform.rotation;
+            //rightEyeCam.transform.rotation = rightEyeTarget.transform.rotation;
         }
         else
         {
-            float cam_euler_y = InputTracking.GetLocalRotation(XRNode.LeftEye).eulerAngles.y + 90;
-            float cam_euler_z = InputTracking.GetLocalRotation(XRNode.LeftEye).eulerAngles.z;
+            //float cam_euler_y = InputTracking.GetLocalRotation(XRNode.LeftEye).eulerAngles.y + 90;
+            //float cam_euler_z = InputTracking.GetLocalRotation(XRNode.LeftEye).eulerAngles.z;
 
-            float newX = Mathf.Sin(Mathf.Deg2Rad * cam_euler_y * 1) * interPupillarDistance / 2.0f;
-            float newZ = Mathf.Cos(Mathf.Deg2Rad * cam_euler_y * 1) * interPupillarDistance / 2.0f;
-            Vector3 camTransform = new Vector3(newX, 0, newZ);
-            leftEyeCam.transform.position += -camTransform;
-            rightEyeCam.transform.position += camTransform;
+            //float newX = Mathf.Sin(Mathf.Deg2Rad * cam_euler_y * 1) * interPupillarDistance / 2.0f;
+            //float newZ = Mathf.Cos(Mathf.Deg2Rad * cam_euler_y * 1) * interPupillarDistance / 2.0f;
+            //Vector3 camTransform = new Vector3(newX, 0, newZ);
+            //leftEyeCam.transform.position += -camTransform;
+            //rightEyeCam.transform.position += camTransform;
         }
 
-        //leftEyeWrapper.transform.localRotation = Quaternion.identity * Quaternion.Euler(new Vector3(0, convergenceAngle / 2.0f, 0));
-        //rightEyeWrapper.transform.localRotation = Quaternion.identity * Quaternion.Euler(new Vector3(0, -convergenceAngle / 2.0f, 0));
 
-        leftEyeWrapper.transform.localRotation = Quaternion.identity * Quaternion.Euler(leftEyeTarget.transform.up * convergenceAngle / 2.0f);
-        rightEyeWrapper.transform.localRotation = Quaternion.identity * Quaternion.Euler(-leftEyeTarget.transform.up * convergenceAngle / 2.0f);
+        leftEyeWrapper.transform.localPosition = leftEyeTarget.transform.position - cyclopCam.transform.right * interPupillarDistance / 2.0f;
+        rightEyeWrapper.transform.localPosition = rightEyeTarget.transform.position + cyclopCam.transform.right * interPupillarDistance / 2.0f;
+
+        leftEyeWrapper.transform.localRotation = Quaternion.Euler(leftEyeTarget.transform.up * convergenceAngle / 2.0f) * leftEyeTarget.transform.rotation;
+        rightEyeWrapper.transform.localRotation = Quaternion.Euler(-leftEyeTarget.transform.up * convergenceAngle / 2.0f) * rightEyeTarget.transform.rotation;
 
 
         //if (PlayerSettings.stereoRenderingPath == StereoRenderingPath.SinglePass)

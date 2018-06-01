@@ -6,35 +6,34 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine.UI;
 
 public class SaveLoad : MonoBehaviour {
-	public Proband proband;
+	public ProbandTests probandTests;
+    public ProbandSteps probandSteps;
 
     private void Start()
     {
-        SaveProband();
+        probandTests = new ProbandTests();
+        probandSteps = new ProbandSteps();
     }
 
-    public void SaveProband()
+    public void SaveProbandTasks()
 	{
-		string filePath = Path.Combine(Application.streamingAssetsPath, "proband" + proband.Id + ".json");
+		string filePath = Path.Combine(Application.streamingAssetsPath, "proband_tasks_" + probandTests.Id + ".json");
 
-        string fileData = JsonUtility.ToJson(proband);
+        string fileData = JsonUtility.ToJson(probandTests);
 
         File.WriteAllText(filePath, fileData);
         UnityEditor.AssetDatabase.Refresh();
 
-        //FileStream file;
+    }
 
-        //if (File.Exists(filePath))
-        //{
-        //    Debug.Log("deleted prev file");
-        //    File.Delete(filePath);
-        //}
-        //file = File.Create(filePath);
+    public void SaveProbandSteps()
+    {
+        string filePath = Path.Combine(Application.streamingAssetsPath, "proband_steps_" + probandSteps.Id + ".json");
 
-        //BinaryFormatter bf = new BinaryFormatter();
-        //bf.Serialize(file, proband);
-        //file.Close();
-        //Debug.Log("SAVED");
+        string fileData = JsonUtility.ToJson(probandSteps);
+
+        File.WriteAllText(filePath, fileData);
+        UnityEditor.AssetDatabase.Refresh();
     }
 
     // TODO: Autocreate folder in build
