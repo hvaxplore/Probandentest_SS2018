@@ -1,0 +1,87 @@
+newmtl tex_one_uv_per_vertex_0
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+d 1
+Ns 0.000000
+illum 1
+map_Kd tex_0.jpg
+newmtl tex_one_uv_per_vertex_1
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+d 1
+Ns 0.000000
+illum 1
+map_Kd tex_1.jpg
+newmtl tex_one_uv_per_vertex_2
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+d 1
+Ns 0.000000
+illum 1
+map_Kd tex_2.jpg
+newmtl tex_one_uv_per_vertex_3
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+d 1
+Ns 0.000000
+illum 1
+map_Kd tex_3.jpg
+newmtl tex_one_uv_per_vertex_4
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+d 1
+Ns 0.000000
+illum 1
+map_Kd tex_4.jpg
+newmtl tex_one_uv_per_vertex_5
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+d 1
+Ns 0.000000
+illum 1
+map_Kd tex_5.jpg
+newmtl tex_one_uv_per_vertex_6
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+d 1
+Ns 0.000000
+illum 1
+map_Kd tex_6.jpg
+newmtl tex_one_uv_per_vertex_7
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+d 1
+Ns 0.000000
+illum 1
+map_Kd tex_7.jpg
+newmtl tex_one_uv_per_vertex_8
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+d 1
+Ns 0.000000
+illum 1
+map_Kd tex_8.jpg
+newmtl tex_one_uv_per_vertex_9
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+d 1
+Ns 0.000000
+illum 1
+map_Kd tex_9.jpg
+newmtl tex_one_uv_per_vertex_untextured
+Ka 0.501961 0.501961 0.501961
+Kd 0.501961 0.501961 0.501961
+Ks 0.000000 0.000000 0.000000
+d 1
+Ns 0.000000
+illum 1

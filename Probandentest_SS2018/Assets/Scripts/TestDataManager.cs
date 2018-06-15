@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.XR;
 
 /// <summary>
 /// Contains all var values of the test for easy access
@@ -8,16 +10,17 @@ public class TestDataManager : MonoBehaviour
     public TestRuntimeManager runtimeManager;
     private TestState testState;
 
-    public Transform camLeft;
-    public Transform camRight;
-    public Transform camCyclop; // is the head transform
-
-	public Transform targetCurrent; // 
-	public float distanceToTarget;
-
+    public Vector3 headPos;
+    public Quaternion headRot;
+    public Ray eyeRay;
+    public Vector3 targetCurrent; // 
+    public float distanceToTarget;
     public float rayScale = 0;
+    public Transform realProbandHead;
 
+    public bool eyeTrackerMode;
     public bool debugMode;
+    public Transform testObj;
 
     public TestState TestState
     {
@@ -28,7 +31,7 @@ public class TestDataManager : MonoBehaviour
 
         set
         {
-            testState = (TestState) Mathf.Max(0, Mathf.Min(TestState.GetNames(typeof(TestState)).Length - 1, (int)value));
+            testState = (TestState)Mathf.Max(0, Mathf.Min(TestState.GetNames(typeof(TestState)).Length - 1, (int)value));
         }
     }
 
@@ -36,34 +39,73 @@ public class TestDataManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        PupilData.calculateMovingAverage = true;
         runtimeManager = GetComponent<TestRuntimeManager>();
 
-        camLeft = Eyes.instance.leftEyeCam.transform;
-        camRight = Eyes.instance.rightEyeCam.transform;
-        camCyclop = Eyes.instance.cyclopCam.transform;
+        if (eyeTrackerMode)
+        {
+            PupilData.calculateMovingAverage = true;
+
+            PupilTools.IsGazing = true;
+            PupilTools.SubscribeTo("gaze");
+
+            PupilGazeTracker.Instance.OnUpdate += OnUpdate;
+        }
+
+        InputTracking.nodeAdded += nodeTrackerAdded;
+        InputTracking.nodeRemoved += nodeTrackerAdded;
     }
 
-    // Update is called once per frame
+    private void nodeTrackerAdded(XRNodeState obj)
+    {
+        Vector3 nodePos = Vector3.zero;
+        obj.TryGetPosition(out nodePos);
+        Debug.Log(obj.nodeType + " Pos: " + nodePos.ToString() + " tracked: " + obj.tracked + " id: " + obj.uniqueID);
+    }
+
     void Update()
     {
-
-        if (PupilTools.IsConnected)
+        if (runtimeManager.sl.probandMeta.isVR_Proband)
         {
-            Vector3 gazeLeft = camCyclop.rotation * PupilData._3D.LeftGazeNormal;
-            Vector3 gazeRight = camCyclop.rotation * PupilData._3D.RightGazeNormal;
+            headPos = InputTracking.GetLocalPosition(XRNode.CenterEye);
+            headRot = InputTracking.GetLocalRotation(XRNode.CenterEye);
+        }
+        else
+        {
+            headPos = realProbandHead.position;
+            headRot = realProbandHead.rotation * Quaternion.Euler(90, 0, 0);
 
-            if(debugMode)
+            Camera.main.transform.position = headPos;
+            Camera.main.transform.rotation = headRot;
+        }
+
+        testObj.position = headPos;
+        testObj.rotation = headRot;
+        Debug.DrawRay(testObj.position, testObj.forward * 100, Color.red);
+    }
+
+    void OnUpdate()
+    {
+        if (PupilTools.IsGazing && PupilTools.CalibrationMode == Calibration.Mode._2D && eyeTrackerMode)
+        {
+            Ray rightEyeRay = Camera.main.ViewportPointToRay(PupilData._2D.RightEyePosition);
+            Ray leftEyeRay = Camera.main.ViewportPointToRay(PupilData._2D.LeftEyePosition);
+            Ray gazeEyeRay = Camera.main.ViewportPointToRay(PupilData._2D.GazePosition);
+
+            eyeRay = gazeEyeRay;
+
+            if (debugMode)
             {
-                Debug.DrawRay(Eyes.instance.leftEyeCam.transform.position, gazeLeft * rayScale, Color.red);
-                Debug.DrawRay(Eyes.instance.rightEyeCam.transform.position, gazeRight * rayScale, Color.blue);
+                Debug.DrawRay(rightEyeRay.origin, leftEyeRay.direction * 100, Color.green);
+                Debug.DrawRay(leftEyeRay.origin, rightEyeRay.direction * 100, Color.blue);
+                Debug.DrawRay(gazeEyeRay.origin, gazeEyeRay.direction * 100, Color.red);
             }
+
         }
     }
 
     void OnEnable()
     {
-        if (PupilTools.IsConnected)
+        if (PupilTools.IsConnected && eyeTrackerMode)
         {
             PupilGazeTracker.Instance.StartVisualizingGaze();
         }
@@ -71,7 +113,7 @@ public class TestDataManager : MonoBehaviour
 
     void OnDisable()
     {
-        if (PupilTools.IsConnected)
+        if (PupilTools.IsConnected && eyeTrackerMode)
         {
             PupilTools.UnSubscribeFrom("gaze");
             print("We stopped gazing");

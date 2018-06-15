@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR;
 
 [RequireComponent(typeof(TestDataManager), typeof(SaveLoad))]
 public class TestRuntimeManager : MonoBehaviour
@@ -106,7 +107,7 @@ public class TestRuntimeManager : MonoBehaviour
 
     private void setTargetObjectForTest(int i)
     {
-        testDataManager.targetCurrent = targetObjects[(int)testDataManager.TestState];
+        testDataManager.targetCurrent = targetObjects[(int)testDataManager.TestState].position;
     }
 
     private IEnumerator fadeItOut()
@@ -137,51 +138,51 @@ public class TestRuntimeManager : MonoBehaviour
                 break;
             case TestState.tableGuess:
                 activeTest = new TestResultDistanceMeasure();
-                activeTest.fillStart(testDataManager.TestState, timeCurrent, testDataManager.camCyclop);
+                activeTest.fillStart(testDataManager.TestState, timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye));
                 tableGuessInput.gameObject.SetActive(true);
                 sl.probandTests.tableGuess = (TestResultDistanceMeasure)activeTest;
                 break;
             case TestState.spotlightB:
                 activeTest = new TestResultSpotlight();
-                activeTest.fillStart(testDataManager.TestState, timeCurrent, testDataManager.camCyclop);
+                activeTest.fillStart(testDataManager.TestState, timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye));
                 sl.probandTests.testSpotlightsBlue = (TestResultSpotlight)activeTest;
                 break;
             case TestState.spotlightG:
                 activeTest = new TestResultSpotlight();
-                activeTest.fillStart(testDataManager.TestState, timeCurrent, testDataManager.camCyclop);
+                activeTest.fillStart(testDataManager.TestState, timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye));
                 sl.probandTests.testSpotlightsGreen = (TestResultSpotlight)activeTest;
                 break;
             case TestState.spotlightR:
                 activeTest = new TestResultSpotlight();
-                activeTest.fillStart(testDataManager.TestState, timeCurrent, testDataManager.camCyclop);
+                activeTest.fillStart(testDataManager.TestState, timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye));
                 sl.probandTests.testSpotlightsRed = (TestResultSpotlight)activeTest;
                 break;
             case TestState.clockBig:
                 clockGuess.gameObject.SetActive(true);
                 clockGuess.text = ":";
                 activeTest = new TestResultClocks();
-                activeTest.fillStart(testDataManager.TestState, timeCurrent, testDataManager.camCyclop);
+                activeTest.fillStart(testDataManager.TestState, timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye));
                 sl.probandTests.testClocksBig = (TestResultClocks)activeTest;
                 break;
             case TestState.clockNormal:
                 clockGuess.gameObject.SetActive(true);
                 clockGuess.text = ":";
                 activeTest = new TestResultClocks();
-                activeTest.fillStart(testDataManager.TestState, timeCurrent, testDataManager.camCyclop);
+                activeTest.fillStart(testDataManager.TestState, timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye));
                 sl.probandTests.testClocksNormal = (TestResultClocks)activeTest;
                 break;
             case TestState.clockSmall:
                 clockGuess.gameObject.SetActive(true);
                 clockGuess.text = ":";
                 activeTest = new TestResultClocks();
-                activeTest.fillStart(testDataManager.TestState, timeCurrent, testDataManager.camCyclop);
+                activeTest.fillStart(testDataManager.TestState, timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye));
                 sl.probandTests.testClocksSmall = (TestResultClocks)activeTest;
                 break;
             case TestState.cube:
                 cubeChosen.gameObject.SetActive(true);
                 cubeGiven.gameObject.SetActive(true);
                 activeTest = new TestResultCube();
-                activeTest.fillStart(testDataManager.TestState, timeCurrent, testDataManager.camCyclop);
+                activeTest.fillStart(testDataManager.TestState, timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye));
                 sl.probandTests.testCube = (TestResultCube)activeTest;
                 break;
             case TestState.testEnded:
@@ -197,7 +198,7 @@ public class TestRuntimeManager : MonoBehaviour
         {
             case TestState.tableGuess:
                 TestResultDistanceMeasure temp = (TestResultDistanceMeasure)activeTest;
-                temp.fillEnd(timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                temp.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
                 temp.distanceGuess = float.Parse(tableGuessInput.text);
                 tableGuessInput.gameObject.SetActive(false);
                 temp.deviationInMeter = temp.distanceGuess - temp.distanceToTarget;
@@ -206,17 +207,17 @@ public class TestRuntimeManager : MonoBehaviour
                 break;
             case TestState.spotlightB:
                 TestResultSpotlight spotlightTemp = (TestResultSpotlight)activeTest;
-                spotlightTemp.fillEnd(timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                spotlightTemp.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
                 sl.probandTests.testSpotlightsBlue = spotlightTemp;
                 break;
             case TestState.spotlightG:
                 spotlightTemp = (TestResultSpotlight)activeTest;
-                spotlightTemp.fillEnd(timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                spotlightTemp.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
                 sl.probandTests.testSpotlightsGreen = spotlightTemp;
                 break;
             case TestState.spotlightR:
                 spotlightTemp = (TestResultSpotlight)activeTest;
-                spotlightTemp.fillEnd(timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                spotlightTemp.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
                 sl.probandTests.testSpotlightsRed = spotlightTemp;
                 break;
             case TestState.clockBig:
@@ -228,7 +229,7 @@ public class TestRuntimeManager : MonoBehaviour
                 if (clock.timeGuess.Equals(clock.timeReal))
                     clock.correctGuess = true;
 
-                clock.fillEnd(timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                clock.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
                 sl.probandTests.testClocksBig = clock;
                 break;
             case TestState.clockNormal:
@@ -240,7 +241,7 @@ public class TestRuntimeManager : MonoBehaviour
                 if (clock.timeGuess.Equals(clock.timeReal))
                     clock.correctGuess = true;
 
-                clock.fillEnd(timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                clock.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
                 sl.probandTests.testClocksNormal = clock;
                 break;
             case TestState.clockSmall:
@@ -252,7 +253,7 @@ public class TestRuntimeManager : MonoBehaviour
                 if (clock.timeGuess.Equals(clock.timeReal))
                     clock.correctGuess = true;
 
-                clock.fillEnd(timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                clock.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
                 sl.probandTests.testClocksSmall = clock;
                 break;
             case TestState.cube:
@@ -261,7 +262,7 @@ public class TestRuntimeManager : MonoBehaviour
                 TestResultCube cube = (TestResultCube)activeTest;
                 cube.cubeChosen = cubeChosen.options[cubeChosen.value].text;
                 cube.cubeGiven = cubeGiven.options[cubeGiven.value].text;
-                cube.fillEnd(timeCurrent, testDataManager.camCyclop, testDataManager.targetCurrent);
+                cube.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
                 sl.probandTests.testCube = cube;
                 break;
         }
@@ -279,6 +280,7 @@ public class TestRuntimeManager : MonoBehaviour
     {
         sl.SaveProbandSteps();
         sl.SaveProbandTasks();
+        sl.SaveProbandMeta();
     }
 
     void updateTestInfo()
@@ -308,14 +310,14 @@ public enum TestState
     spotlightB,
     spotlightBIdle,
 
-    clockSmall,
-    clockSmallIdle,
+    clockBig,
+    clockBigIdle,
 
     clockNormal,
     clockNormalIdle,
 
-    clockBig,
-    clockBigIdle,
+    clockSmall,
+    clockSmallIdle,
 
     cube,
     cubeIdle,

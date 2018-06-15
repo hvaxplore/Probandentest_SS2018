@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 //[System.Serializable]
 //public class Proband
@@ -104,18 +105,15 @@ public class TestStep
     // Saved seperately, if it is necessary to look into all data
     public Vector3 headDataPos; // TODO: Transform instead ObjectPosRot
     public Quaternion headDataRot; // TODO: Transform instead ObjectPosRot
-    public Quaternion eyeLeft;
-    public Quaternion eyeRight;
+    public Ray eyeRay;
 
-    public TestStep(TestState _taskIndex, float _time, Transform _head, Transform _eyeLeft, Transform _eyeRight)
+    public TestStep(TestState taskIndexCurrent, float timeCurrent, Vector3 headDataPos, Quaternion headDataRot, Ray eyeRay)
     {
-        taskIndexCurrent = _taskIndex; // TODO: Time.time instead 
-
-        timeCurrent = _time;
-
-        //headData = new ObjectPosRot(_head);
-        //eyeLeft = new ObjectRot(_eyeLeft);
-        //eyeRight = new ObjectRot(_eyeRight);
+        this.taskIndexCurrent = taskIndexCurrent;
+        this.timeCurrent = timeCurrent;
+        this.headDataPos = headDataPos;
+        this.headDataRot = headDataRot;
+        this.eyeRay = eyeRay;
     }
 }
 [System.Serializable]
@@ -133,21 +131,20 @@ public class TestResults
     public Vector3 positionOnTaskFinish;
     public float distanceToTarget;
 
-    public virtual void fillStart(TestState _state, float _time, Transform _head)
+    public virtual void fillStart(TestState _state, float _time, Vector3 _head)
     {
         testState = _state.ToString(); // TODO: test this
         timeStart = _time;
         taskFulfilled = true;
-        positionOnTaskStart = _head.position;
+        positionOnTaskStart = _head;
     }
 
-    public virtual void fillEnd(float _time, Transform _head, Transform _target)
+    public virtual void fillEnd(float _time, Vector3 _head, Vector3 _target)
     {
         timeEnd = _time;
         testDuration = timeEnd - timeStart;
-        positionOnTaskFinish = _head.position;
-        if (_target != null)
-            distanceToTarget = Vector3.Distance(_head.position, _target.position);
+        positionOnTaskFinish = _head;
+        distanceToTarget = Vector3.Distance(_head, _target);
     }
 }
 
@@ -164,20 +161,20 @@ public class TestResultSpotlight : TestResults
 {
     public Vector3 spotLightPosition;
 
-    public override void fillEnd(float _time, Transform _head, Transform _target)
+    public override void fillEnd(float _time, Vector3 _head, Vector3 _target)
     {
         timeEnd = _time;
         testDuration = timeEnd - timeStart;
-        positionOnTaskFinish = _head.position;
+        positionOnTaskFinish = _head;
 
-        Vector3 head = _head.position;
+        Vector3 head = _head;
         head.y = 0;
 
-        spotLightPosition = _target.position;
+        spotLightPosition = _target;
 
         if (_target != null)
         {
-            Vector3 target = _target.position;
+            Vector3 target = _target;
             target.y = 0;
             distanceToTarget = Vector3.Distance(head, target);
         }
@@ -203,9 +200,6 @@ public class TestResultCube : TestResults
 [System.Serializable]
 public class ProbandTests
 {
-    public string Name;
-    public int Id;
-
     public TestResultDistanceMeasure tableGuess;
     public TestResultSpotlight testSpotlightsRed;
     public TestResultSpotlight testSpotlightsGreen;
@@ -220,14 +214,39 @@ public class ProbandTests
     }
 }
 
+
 [System.Serializable]
-public class ProbandSteps
+public class ProbandMeta
 {
     public string Name;
     public int Id;
     public float IPD;
     public float EyeHeight;
+    public string gender;
+    public string vraffinity;
+    public string sehhilfe;
+    public string sehfehler;
+    public bool isVR_Proband;
 
+    public ProbandMeta()
+    {
+
+    }
+
+    public ProbandMeta(string name, int id, float iPD, float eyeHeight)
+    {
+        Name = name;
+        Id = id;
+        IPD = iPD;
+        EyeHeight = eyeHeight;
+    }
+}
+
+
+[System.Serializable]
+public class ProbandSteps
+{
+    [HideInInspector]
     public List<TestStep> steps;
 
     public ProbandSteps()
@@ -235,24 +254,21 @@ public class ProbandSteps
         steps = new List<TestStep>();
     }
 
-    public ProbandSteps(string name, int id, float iPD, float eyeHeight, List<TestStep> steps)
+    public ProbandSteps(List<TestStep> steps)
     {
-        Name = name;
-        Id = id;
-        IPD = iPD;
-        EyeHeight = eyeHeight;
         this.steps = steps;
     }
 
     public void AddStep(TestDataManager _manager)
     {
-        TestStep newStep = new TestStep(_manager.TestState, _manager.runtimeManager.timeCurrent, _manager.camCyclop, _manager.camLeft, _manager.camRight);
-        steps.Add(newStep);
-    }
-
-    public void AddStep(TestState _taskIndex, float _time, float _conf, float _conv, Transform _head, Transform _eyeLeft, Transform _eyeRight, Transform _handLeft, Transform _handRight)
-    {
-        TestStep newStep = new TestStep(_taskIndex, _time, _head, _eyeLeft, _eyeRight);
+        TestStep newStep = new TestStep(
+            _manager.TestState,
+            _manager.runtimeManager.timeCurrent,
+            _manager.headPos,
+            _manager.headRot,
+            _manager.eyeRay
+            );
+        //TestStep newStep = new TestStep(_manager.TestState, _manager.runtimeManager.timeCurrent, _manager.camCyclop, _manager.camLeft, _manager.camRight);
         steps.Add(newStep);
     }
 }
