@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR;
+using UnityEngine.SceneManagement;
 
+using System;
 [RequireComponent(typeof(TestDataManager), typeof(SaveLoad))]
 public class TestRuntimeManager : MonoBehaviour
 {
@@ -48,7 +50,7 @@ public class TestRuntimeManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
 
     // Use this for initialization
@@ -73,15 +75,21 @@ public class TestRuntimeManager : MonoBehaviour
             timeCurrent += Time.deltaTime;
         }
 
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            //SceneManager.LoadSceneAsync(0, LoadSceneMode.Single);
+            Application.Quit();
+        }
+
+        if (Input.GetKeyDown(KeyCode.PageUp))
         {
             nextTest();
         }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        else if (Input.GetKeyDown(KeyCode.PageDown))
         {
             prevTest();
         }
-        if (Input.GetKeyDown(KeyCode.Escape) && activeTest != null)
+        if (Input.GetKeyDown(KeyCode.F) && activeTest != null)
         {
             activeTest.taskFulfilled = !activeTest.taskFulfilled;
             failedToggle.isOn = !activeTest.taskFulfilled;
@@ -117,8 +125,21 @@ public class TestRuntimeManager : MonoBehaviour
 
         while (alpha > 0)
         {
-
             alpha -= Time.deltaTime;
+            fadeMat.color = new Color(fadeMat.color.r, fadeMat.color.g, fadeMat.color.b, alpha);
+            fadeMechRenderer.material = fadeMat;
+            yield return alpha;
+        }
+    }
+
+    private IEnumerator fadeItIn()
+    {
+        Material fadeMat = fadeMechRenderer.material;
+        float alpha = fadeMat.color.a;
+
+        while (alpha < 1)
+        {
+            alpha += Time.deltaTime;
             fadeMat.color = new Color(fadeMat.color.r, fadeMat.color.g, fadeMat.color.b, alpha);
             fadeMechRenderer.material = fadeMat;
             yield return alpha;
@@ -159,35 +180,41 @@ public class TestRuntimeManager : MonoBehaviour
                 break;
             case TestState.clockBig:
                 clockGuess.gameObject.SetActive(true);
-                clockGuess.text = ":";
+                clockGuess.text = "04:20";
                 activeTest = new TestResultClocks();
                 activeTest.fillStart(testDataManager.TestState, timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye));
                 sl.probandTests.testClocksBig = (TestResultClocks)activeTest;
                 break;
             case TestState.clockNormal:
                 clockGuess.gameObject.SetActive(true);
-                clockGuess.text = ":";
+                clockGuess.text = "02:45";
                 activeTest = new TestResultClocks();
                 activeTest.fillStart(testDataManager.TestState, timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye));
                 sl.probandTests.testClocksNormal = (TestResultClocks)activeTest;
                 break;
             case TestState.clockSmall:
                 clockGuess.gameObject.SetActive(true);
-                clockGuess.text = ":";
+                clockGuess.text = "10:30";
                 activeTest = new TestResultClocks();
                 activeTest.fillStart(testDataManager.TestState, timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye));
                 sl.probandTests.testClocksSmall = (TestResultClocks)activeTest;
                 break;
+            case TestState.clockSmallIdle:
+                StartCoroutine(fadeItIn());
+                break;
             case TestState.cube:
+                StartCoroutine(fadeItOut());
                 cubeChosen.gameObject.SetActive(true);
                 cubeGiven.gameObject.SetActive(true);
                 activeTest = new TestResultCube();
                 activeTest.fillStart(testDataManager.TestState, timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye));
                 sl.probandTests.testCube = (TestResultCube)activeTest;
                 break;
-            case TestState.testEnded:
+            case TestState.saveData:
                 CancelInvoke("processData");
                 saveDataFiles();
+                break;
+            case TestState.testEnded:
                 break;
         }
     }
@@ -223,11 +250,13 @@ public class TestRuntimeManager : MonoBehaviour
             case TestState.clockBig:
                 clockGuess.gameObject.SetActive(false);
                 TestResultClocks clock = (TestResultClocks)activeTest;
-                clock.timeReal = "6:66";
-                clock.timeGuess = clockGuess.text;
+                clock.clockReal = "04:20";
+                clock.clockGuessed = clockGuess.text;
 
-                if (clock.timeGuess.Equals(clock.timeReal))
+                if (clock.clockGuessed.Equals(clock.clockReal))
                     clock.correctGuess = true;
+
+                clock.deviation = GetTimeDeviation(clockToFloat(clock.clockReal), clockToFloat(clock.clockGuessed));
 
                 clock.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
                 sl.probandTests.testClocksBig = clock;
@@ -235,23 +264,26 @@ public class TestRuntimeManager : MonoBehaviour
             case TestState.clockNormal:
                 clockGuess.gameObject.SetActive(false);
                 clock = (TestResultClocks)activeTest;
-                clock.timeReal = "6:66";
-                clock.timeGuess = clockGuess.text;
+                clock.clockReal = "02:45";
+                clock.clockGuessed = clockGuess.text;
 
-                if (clock.timeGuess.Equals(clock.timeReal))
+                if (clock.clockGuessed.Equals(clock.clockReal))
                     clock.correctGuess = true;
 
+                clock.deviation = GetTimeDeviation(clockToFloat(clock.clockReal), clockToFloat(clock.clockGuessed));
                 clock.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
                 sl.probandTests.testClocksNormal = clock;
                 break;
             case TestState.clockSmall:
                 clockGuess.gameObject.SetActive(false);
                 clock = (TestResultClocks)activeTest;
-                clock.timeReal = "6:66";
-                clock.timeGuess = clockGuess.text;
+                clock.clockReal = "10:30";
+                clock.clockGuessed = clockGuess.text;
 
-                if (clock.timeGuess.Equals(clock.timeReal))
+                if (clock.clockGuessed.Equals(clock.clockReal))
                     clock.correctGuess = true;
+
+                clock.deviation = GetTimeDeviation(clockToFloat(clock.clockReal), clockToFloat(clock.clockGuessed));
 
                 clock.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
                 sl.probandTests.testClocksSmall = clock;
@@ -262,10 +294,35 @@ public class TestRuntimeManager : MonoBehaviour
                 TestResultCube cube = (TestResultCube)activeTest;
                 cube.cubeChosen = cubeChosen.options[cubeChosen.value].text;
                 cube.cubeGiven = cubeGiven.options[cubeGiven.value].text;
+
+                CubeOptions chosenCube = ((CubeOptions) Enum.Parse(typeof(CubeOptions), cube.cubeChosen));
+                CubeOptions givenCube = ((CubeOptions)Enum.Parse(typeof(CubeOptions), cube.cubeGiven));
+
+                float deviationSize = (int)chosenCube - (int)givenCube;
+                float deviationPercentage = deviationSize / (float)givenCube;
+
+                cube.deviationCM = deviationSize;
+                cube.deviationPercentage = deviationPercentage;
+
                 cube.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
                 sl.probandTests.testCube = cube;
                 break;
         }
+    }
+
+    private float GetTimeDeviation(float[] orig_time, float[] guessed_time)
+    {
+        float hourDeviation = Mathf.Abs( orig_time[0] - guessed_time[0]);
+        float minuteDeviation = Mathf.Abs(orig_time[1] - guessed_time[1]) / 100.0f;
+        return hourDeviation + minuteDeviation;
+    }
+
+    private float[] clockToFloat(string clockString)
+    {
+        string[] splittetTimeString = clockString.Split(':');
+        float hour = float.Parse(splittetTimeString[0]);
+        float minute = float.Parse(splittetTimeString[1]) / 10.0f;
+        return new float[] {hour, minute};
     }
 
     void processData()
@@ -278,9 +335,7 @@ public class TestRuntimeManager : MonoBehaviour
 
     void saveDataFiles()
     {
-        sl.SaveProbandSteps();
-        sl.SaveProbandTasks();
-        sl.SaveProbandMeta();
+        sl.SaveAllData();
     }
 
     void updateTestInfo()
@@ -322,14 +377,16 @@ public enum TestState
     cube,
     cubeIdle,
 
-    testEnded,
+    saveData,
+    testEnded
+    
 }
 
 public enum CubeOptions
 {
-    CUBE_5_170,
-    CUBE_4_155,
-    CUBE_3_140,
-    CUBE_2_125,
-    CUBE_1_110
+    CUBE_5_170 = 170,
+    CUBE_4_155 = 155,
+    CUBE_3_140 = 140,
+    CUBE_2_125 = 125,
+    CUBE_1_110 = 110
 }

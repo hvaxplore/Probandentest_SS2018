@@ -105,15 +105,15 @@ public class TestStep
     // Saved seperately, if it is necessary to look into all data
     public Vector3 headDataPos; // TODO: Transform instead ObjectPosRot
     public Quaternion headDataRot; // TODO: Transform instead ObjectPosRot
-    public Ray eyeRay;
+    public Vector3 eyeGaze;
 
-    public TestStep(TestState taskIndexCurrent, float timeCurrent, Vector3 headDataPos, Quaternion headDataRot, Ray eyeRay)
+    public TestStep(TestState taskIndexCurrent, float timeCurrent, Vector3 headDataPos, Quaternion headDataRot, Vector3 _eyeGabe)
     {
         this.taskIndexCurrent = taskIndexCurrent;
         this.timeCurrent = timeCurrent;
         this.headDataPos = headDataPos;
         this.headDataRot = headDataRot;
-        this.eyeRay = eyeRay;
+        this.eyeGaze = _eyeGabe;
     }
 }
 [System.Serializable]
@@ -183,19 +183,19 @@ public class TestResultSpotlight : TestResults
 [System.Serializable]
 public class TestResultClocks : TestResults
 {
-    public string timeReal;
-    public string timeGuess;
+    public string clockReal;
+    public string clockGuessed;
     public bool correctGuess;
+    public float deviation;
 }
 [System.Serializable]
 public class TestResultCube : TestResults
 {
     public string cubeGiven;
     public string cubeChosen;
+    public float deviationPercentage;
+    public float deviationCM;
 }
-
-
-
 
 [System.Serializable]
 public class ProbandTests
@@ -218,14 +218,14 @@ public class ProbandTests
 [System.Serializable]
 public class ProbandMeta
 {
-    public string Name;
+    //public string Name;
     public int Id;
-    public float IPD;
-    public float EyeHeight;
-    public string gender;
-    public string vraffinity;
-    public string sehhilfe;
-    public string sehfehler;
+    //public float IPD;
+    //public float EyeHeight;
+    //public string gender;
+    //public string vraffinity;
+    //public string sehhilfe;
+    //public string sehfehler;
     public bool isVR_Proband;
 
     public ProbandMeta()
@@ -233,13 +233,19 @@ public class ProbandMeta
 
     }
 
-    public ProbandMeta(string name, int id, float iPD, float eyeHeight)
+    public ProbandMeta(int id, bool isVR_Proband)
     {
-        Name = name;
         Id = id;
-        IPD = iPD;
-        EyeHeight = eyeHeight;
+        this.isVR_Proband = isVR_Proband;
     }
+
+    //public ProbandMeta(string name, int id, float iPD, float eyeHeight)
+    //{
+    //    //Name = name;
+    //    Id = id;
+    //    //IPD = iPD;
+    //    //EyeHeight = eyeHeight;
+    //}
 }
 
 
@@ -266,7 +272,7 @@ public class ProbandSteps
             _manager.runtimeManager.timeCurrent,
             _manager.headPos,
             _manager.headRot,
-            _manager.eyeRay
+            _manager.eyegaze
             );
         //TestStep newStep = new TestStep(_manager.TestState, _manager.runtimeManager.timeCurrent, _manager.camCyclop, _manager.camLeft, _manager.camRight);
         steps.Add(newStep);

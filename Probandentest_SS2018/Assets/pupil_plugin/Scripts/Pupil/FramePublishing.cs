@@ -84,6 +84,7 @@ public class FramePublishing : MonoBehaviour
 
 	public void InitializeFramePublishing (int eyeIndex)
 	{
+
 		Transform parent = GetComponentInChildren<Camera> ().transform;
 		Shader shader = Shader.Find ("Unlit/Texture");
 

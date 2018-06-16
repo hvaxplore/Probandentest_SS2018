@@ -117,7 +117,10 @@ public class Recalibration : MonoBehaviour {
             File.Delete(filePath);
 
         File.WriteAllText(filePath, fileData);
+
+#if UNITY_EDITOR
         UnityEditor.AssetDatabase.Refresh();
+#endif
     }
 
     public void LoadCalibration()

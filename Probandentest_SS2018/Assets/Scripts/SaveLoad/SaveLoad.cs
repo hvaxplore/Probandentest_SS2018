@@ -30,45 +30,67 @@ public class SaveLoad : MonoBehaviour {
     public void AddFormData()
     {
         probandMeta.Id = int.Parse(id.text);
-        probandMeta.IPD = float.Parse(idp.text);
-        probandMeta.EyeHeight = float.Parse(eyeHeight.text);
+        //probandMeta.IPD = 42f;
+        //probandMeta.EyeHeight = 42f;
 
-        probandMeta.gender = gender.options[gender.value].text;
-        probandMeta.vraffinity = vr.options[vr.value].text;
-        probandMeta.sehhilfe = sehhilfe.options[sehhilfe.value].text;
-        probandMeta.sehfehler = sehfehler.options[sehfehler.value].text;
+        //probandMeta.gender = "42";
+        //probandMeta.vraffinity = "42";
+        //probandMeta.sehhilfe = "42";
+        //probandMeta.sehfehler = "42";
         probandMeta.isVR_Proband = isVRProband.isOn;
     }
 
-    public void SaveProbandTasks()
+    public void SaveAllData()
+    {
+        string realVr = "";
+        if(probandMeta.isVR_Proband)
+        {
+            realVr = "vr";
+        }
+        else
+        {
+            realVr = "rl";
+        }
+        SaveProbandTasks(realVr);
+        SaveProbandSteps(realVr);
+        SaveProbandMeta(realVr);
+    }
+
+    public void SaveProbandTasks(string _realVr)
 	{
-		string filePath = Path.Combine(Application.streamingAssetsPath, "proband_" + int.Parse(id.text) + "_tasks.json");
+		string filePath = Path.Combine(Application.streamingAssetsPath, "proband_" + int.Parse(id.text) + "_" + _realVr + "_tasks.json");
 
         string fileData = JsonUtility.ToJson(probandTests);
 
         File.WriteAllText(filePath, fileData);
-        UnityEditor.AssetDatabase.Refresh();
+#if UNITY_EDITOR
 
+        UnityEditor.AssetDatabase.Refresh();
+#endif
     }
 
-    public void SaveProbandSteps()
+    public void SaveProbandSteps(string _realVr)
     {
-        string filePath = Path.Combine(Application.streamingAssetsPath, "proband_" + int.Parse(id.text) + "_steps.json");
+        string filePath = Path.Combine(Application.streamingAssetsPath, "proband_" + int.Parse(id.text) + "_" + _realVr + "_steps.json");
 
         string fileData = JsonUtility.ToJson(probandSteps);
 
         File.WriteAllText(filePath, fileData);
+#if UNITY_EDITOR
         UnityEditor.AssetDatabase.Refresh();
+#endif
     }
 
-    public void SaveProbandMeta()
+    public void SaveProbandMeta(string _realVr)
     {
-        string filePath = Path.Combine(Application.streamingAssetsPath, "proband_" + int.Parse(id.text) + "_meta.json");
+        string filePath = Path.Combine(Application.streamingAssetsPath, "proband_" + int.Parse(id.text) + "_" + _realVr + "_meta.json");
 
         string fileData = JsonUtility.ToJson(probandMeta);
 
         File.WriteAllText(filePath, fileData);
+#if UNITY_EDITOR
         UnityEditor.AssetDatabase.Refresh();
+#endif
     }
 
 

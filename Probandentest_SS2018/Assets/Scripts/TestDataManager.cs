@@ -9,14 +9,16 @@ public class TestDataManager : MonoBehaviour
 {
     public TestRuntimeManager runtimeManager;
     private TestState testState;
+    public SaveLoad sl;
 
     public Vector3 headPos;
     public Quaternion headRot;
-    public Ray eyeRay;
+    public Vector3 eyegaze;
     public Vector3 targetCurrent; // 
     public float distanceToTarget;
     public float rayScale = 0;
-    public Transform realProbandHead;
+    public ReverseGyro realEyeTrackerHelper;
+    public Transform hardwareTracker;
 
     public bool eyeTrackerMode;
     public bool debugMode;
@@ -39,6 +41,7 @@ public class TestDataManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        sl = this.GetComponent<SaveLoad>();
         runtimeManager = GetComponent<TestRuntimeManager>();
 
         if (eyeTrackerMode)
@@ -71,8 +74,8 @@ public class TestDataManager : MonoBehaviour
         }
         else
         {
-            headPos = realProbandHead.position;
-            headRot = realProbandHead.rotation * Quaternion.Euler(90, 0, 0);
+            headPos = hardwareTracker.position;
+            headRot = hardwareTracker.rotation * Quaternion.Euler(90, 0, 0);
 
             Camera.main.transform.position = headPos;
             Camera.main.transform.rotation = headRot;
@@ -85,20 +88,30 @@ public class TestDataManager : MonoBehaviour
 
     void OnUpdate()
     {
+
         if (PupilTools.IsGazing && PupilTools.CalibrationMode == Calibration.Mode._2D && eyeTrackerMode)
         {
             Ray rightEyeRay = Camera.main.ViewportPointToRay(PupilData._2D.RightEyePosition);
             Ray leftEyeRay = Camera.main.ViewportPointToRay(PupilData._2D.LeftEyePosition);
             Ray gazeEyeRay = Camera.main.ViewportPointToRay(PupilData._2D.GazePosition);
 
-            eyeRay = gazeEyeRay;
+            Vector3 gazeDir = gazeEyeRay.direction;
 
-            if (debugMode)
+            eyegaze = gazeDir;
+
+            /// Only do this for the real proband
+            if (!sl.probandMeta.isVR_Proband && testState!=TestState.none)
             {
-                Debug.DrawRay(rightEyeRay.origin, leftEyeRay.direction * 100, Color.green);
-                Debug.DrawRay(leftEyeRay.origin, rightEyeRay.direction * 100, Color.blue);
-                Debug.DrawRay(gazeEyeRay.origin, gazeEyeRay.direction * 100, Color.red);
+                realEyeTrackerHelper.RecalculateEyeTracker(); // Recalculate the eye tracker rotation onto the hardware tracker
+                eyegaze = realEyeTrackerHelper.EyeRot.transform.rotation.eulerAngles; // then get the new rotation instead
             }
+
+            //if (debugMode)
+            //{
+            //    Debug.DrawRay(rightEyeRay.origin, leftEyeRay.direction * 100, Color.green);
+            //    Debug.DrawRay(leftEyeRay.origin, rightEyeRay.direction * 100, Color.blue);
+            //    Debug.DrawRay(gazeEyeRay.origin, gazeDir * 100, Color.red);
+            //}
 
         }
     }
