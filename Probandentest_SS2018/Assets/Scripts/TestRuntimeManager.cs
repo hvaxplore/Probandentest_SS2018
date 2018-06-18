@@ -83,11 +83,11 @@ public class TestRuntimeManager : MonoBehaviour
             Application.Quit();
         }
 
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.T))
         {
             nextTest();
         }
-        else if (Input.GetKeyDown(KeyCode.S)) // TTODO change key
+        else if (Input.GetKeyDown(KeyCode.R)) // TTODO change key
         {
             prevTest();
         }
