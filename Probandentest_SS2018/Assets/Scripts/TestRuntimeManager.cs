@@ -27,6 +27,8 @@ public class TestRuntimeManager : MonoBehaviour
     private TestResults activeTest;
     private CubeOptions cubeOptions;
 
+    public GameObject cubeVR;
+
     public CubeOptions CubeOptions
     {
         get
@@ -81,11 +83,11 @@ public class TestRuntimeManager : MonoBehaviour
             Application.Quit();
         }
 
-        if (Input.GetKeyDown(KeyCode.PageUp))
+        if (Input.GetKeyDown(KeyCode.W))
         {
             nextTest();
         }
-        else if (Input.GetKeyDown(KeyCode.PageDown))
+        else if (Input.GetKeyDown(KeyCode.S)) // TTODO change key
         {
             prevTest();
         }
@@ -139,7 +141,7 @@ public class TestRuntimeManager : MonoBehaviour
 
         while (alpha < 1)
         {
-            alpha += Time.deltaTime;
+            alpha += Time.deltaTime * 1.1f;
             fadeMat.color = new Color(fadeMat.color.r, fadeMat.color.g, fadeMat.color.b, alpha);
             fadeMechRenderer.material = fadeMat;
             yield return alpha;
@@ -201,6 +203,8 @@ public class TestRuntimeManager : MonoBehaviour
                 break;
             case TestState.clockSmallIdle:
                 StartCoroutine(fadeItIn());
+                if(cubeVR != null)
+                    cubeVR.SetActive(true);
                 break;
             case TestState.cube:
                 StartCoroutine(fadeItOut());
