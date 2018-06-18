@@ -12,19 +12,16 @@ public class KillChildsOnEnable : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        if(transform.childCount > 1)
+        {
+            try
+            {
+                Destroy(transform.GetChild(1).gameObject);
+            }
+            catch(Exception e)
+            {
+
+            }
+        }
 	}
-
-    private void OnTransformChildrenChanged()
-    {
-        try
-        {
-            Destroy(transform.GetChild(1).gameObject);
-        }
-        catch(Exception e)
-        {
-
-        }
-        
-    }
 }
