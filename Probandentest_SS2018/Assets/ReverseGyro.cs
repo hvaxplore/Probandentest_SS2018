@@ -19,8 +19,8 @@ public class ReverseGyro : MonoBehaviour {
     public void RecalculateEyeTracker ()
     {
         Vector3 newGaze = testData.eyegaze;
-        newGaze = new Vector3(100 * newGaze.x, 100* newGaze.y, 100* newGaze.z);
-        obj1.transform.localRotation = Quaternion.Euler(newGaze);
+        newGaze = new Vector3(newGaze.x, newGaze.y, newGaze.z);
+        obj1.transform.localRotation = Quaternion.LookRotation(newGaze);
         obj2.transform.rotation = HardWareTracker.rotation;
         hardWarePosDir.transform.position = HardWareTracker.position;
         hardWarePosDir.transform.rotation = HardWareTracker.rotation;

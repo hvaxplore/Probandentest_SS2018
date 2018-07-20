@@ -118,10 +118,10 @@ public class TestDataManager : MonoBehaviour
 
     void OnEnable()
     {
-        if (PupilTools.IsConnected && eyeTrackerMode)
-        {
-            PupilGazeTracker.Instance.StartVisualizingGaze();
-        }
+        //if (PupilTools.IsConnected && eyeTrackerMode)
+        //{
+        //    //PupilGazeTracker.Instance.StartVisualizingGaze();
+        //}
     }
 
     void OnDisable()

@@ -6,21 +6,24 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/DirektStart.unity
+    guid: e7df170f9f1f4e34fa30f4458b0ed4c0
+  - enabled: 0
     path: Assets/Scenes/Startscene.unity
     guid: 3b93068439c24eb4b9441e2bb4077609
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Calibration_Real.unity
     guid: d8c62ef771353ca478491fbe3a58efc4
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Calibration_VR.unity
     guid: 29f56ca9b75f9ff4ab4025e85f37cfdb
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Probandentest_Real.unity
     guid: 9541a8e7af6155e449c06a1841c4a870
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Probandentest_VR.unity
     guid: ebaad3f279a069349a70104b21b78193
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Probandentest_JustTestIt.unity
     guid: 32b6a47916cbdcf4fb03a61acb9fad72
   m_configObjects: {}

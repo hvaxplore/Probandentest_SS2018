@@ -19,6 +19,7 @@ public class TestRuntimeManager : MonoBehaviour
     public Dropdown cubeChosen;
     public Dropdown cubeGiven;
     public InputField clockGuess;
+    public Text trackerPos;
 
     public float timeCurrent;
 
@@ -83,18 +84,17 @@ public class TestRuntimeManager : MonoBehaviour
             Application.Quit();
         }
 
-        if (Input.GetKeyDown(KeyCode.T))
+        if (Input.GetKeyDown(KeyCode.T) && testDataManager.TestState != TestState.gist && testDataManager.TestState != TestState.fadeState && !clockGuess.isFocused)
         {
             nextTest();
         }
-        else if (Input.GetKeyDown(KeyCode.R)) // TTODO change key
+        else if (Input.GetKeyDown(KeyCode.R) && testDataManager.TestState != TestState.gist && testDataManager.TestState != TestState.fadeState && !clockGuess.isFocused)
         {
             prevTest();
         }
         if (Input.GetKeyDown(KeyCode.F) && activeTest != null)
         {
             activeTest.taskFulfilled = !activeTest.taskFulfilled;
-            failedToggle.isOn = !activeTest.taskFulfilled;
         }
 
     }
@@ -117,6 +117,7 @@ public class TestRuntimeManager : MonoBehaviour
 
     private void setTargetObjectForTest(int i)
     {
+        Debug.Log(targetObjects[(int)testDataManager.TestState].gameObject);
         testDataManager.targetCurrent = targetObjects[(int)testDataManager.TestState].position;
     }
 
@@ -148,16 +149,24 @@ public class TestRuntimeManager : MonoBehaviour
         }
     }
 
+    IEnumerator DelayedNextStep(float _time)
+    {
+        yield return new WaitForSeconds(_time);
+        nextTest();
+    }
+
     public void SwitchStateStart()
     {
         switch (testDataManager.TestState)
         {
             case TestState.fadeState:
                 StartCoroutine(fadeItOut());
+                StartCoroutine(DelayedNextStep(1));
                 break;
             case TestState.gist:
                 CancelInvoke("processData");
                 InvokeRepeating("processData", 0f, 0.025f);
+                StartCoroutine(DelayedNextStep(15));
                 break;
             case TestState.tableGuess:
                 activeTest = new TestResultDistanceMeasure();
@@ -225,8 +234,11 @@ public class TestRuntimeManager : MonoBehaviour
 
     public void SwitchStateEnd()
     {
+        //Debug.Log(testDataManager.targetCurrent.);
         switch (testDataManager.TestState)
         {
+            case TestState.gist:
+                break;
             case TestState.tableGuess:
                 TestResultDistanceMeasure temp = (TestResultDistanceMeasure)activeTest;
                 temp.fillEnd(timeCurrent, InputTracking.GetLocalPosition(XRNode.CenterEye), testDataManager.targetCurrent);
@@ -256,6 +268,8 @@ public class TestRuntimeManager : MonoBehaviour
                 TestResultClocks clock = (TestResultClocks)activeTest;
                 clock.clockReal = "04:20";
                 clock.clockGuessed = clockGuess.text;
+
+
 
                 if (clock.clockGuessed.Equals(clock.clockReal))
                     clock.correctGuess = true;
@@ -345,6 +359,11 @@ public class TestRuntimeManager : MonoBehaviour
     void updateTestInfo()
     {
         textInfo.text = testDataManager.TestState.ToString() + " || time: " + (int)timeCurrent + " seconds || " + sl.probandSteps.steps.Count + " Steps";
+        trackerPos.text = "HeadPos: " + testDataManager.headPos.ToString();
+        if (activeTest != null)
+        {
+            failedToggle.isOn = !activeTest.taskFulfilled;
+        }
     }
 }
 
